@@ -9,12 +9,13 @@ public class Minesweeper {
   private int[][] boardHidden = new int[10][10];
 
   //Game setting
-  private int numberOfBombs = 1;
+  private int numberOfBombs = 10;
 
   public void startMinesweeper(){
     System.out.println
       ("\n\n------------- Welcome to Minesweeper ! -------------\n");
-      setRandomBombs();
+    System.out.printf("-----There are a total of %d bombs. GOOD LUCK!------\n\n",numberOfBombs);
+    setRandomBombs();
 
     boolean gameContinue = true;
     while(gameContinue){
@@ -47,13 +48,13 @@ public class Minesweeper {
       }
       if(boardHidden[i][j]==100){
         showHiddenMap();
-        System.out.print("Oops! You stepped on a mine!\n---------- GAME OVER ----------");
+        System.out.print("Oops! You hit a mine!\n---------- GAME OVER ----------");
         sc.close();
         return false;
       }else if(boardHidden[i][j]==0)
-        editVisibleMap(i,j);
+        checkSelectionSurroundings(i,j);
       else
-        countNeighbouringBombs(i,j);  
+        showRandomSurroundings(i,j);  
       return true;
     }catch(Exception e){
       System.out.println("Input Wrong!");
@@ -159,14 +160,14 @@ public class Minesweeper {
     }
   }
 
-  public void editVisibleMap(int i, int j){
+  public void checkSelectionSurroundings(int i, int j){
     boardShown[i][j] = 50;
     if(i!=0){ 
-      boardShown[i-1][j] = boardHidden[i-1][j];
+      syncShownHiddenBoard((i-1),j);
       if(boardShown[i-1][j]==0){
         boardShown[i-1][j] = 50;
         if(j!=0) {
-          boardShown[i-1][j-1] = boardHidden[i-1][j-1];
+          syncShownHiddenBoard((i-1),(j-1));
           if(boardShown[i-1][j-1]==0) 
             boardShown[i-1][j-1]=50;
         }
@@ -174,63 +175,63 @@ public class Minesweeper {
     }
 
     if(j!=0){
-      boardShown[i][j-1]=boardHidden[i][j-1];
+      syncShownHiddenBoard(i,(j-1));
       if(boardShown[i][j-1]==0) 
         boardShown[i][j-1] = 50;
         if(i!=9){
-          boardShown[i+1][j-1]=boardHidden[i+1][j-1];
+          syncShownHiddenBoard((i+1),(j-1));
           if(boardShown[i+1][j-1]==0) 
             boardShown[i+1][j-1] = 50;
         }
     }
      
     if(i!=9){
-      boardShown[i+1][j]=boardHidden[i+1][j];
+      syncShownHiddenBoard((i+1),j);
       if(boardShown[i+1][j]==0) 
         boardShown[i+1][j]=50;
         if(j!=9){
-          boardShown[i+1][j+1]= boardHidden[i+1][j+1];
+          syncShownHiddenBoard((i+1),(j+1));
           if(boardShown[i+1][j+1]==0) 
             boardShown[i+1][j+1] = 50;
         }
     }
     
     if(j!=9){
-      boardShown[i][j+1]=boardHidden[i][j+1];
+      syncShownHiddenBoard(i,(j+1));
       if(boardShown[i][j+1]==0) 
         boardShown[i][j+1] = 50;
         if(i!=0){
-          boardShown[i-1][j+1]=boardHidden[i-1][j+1];
+          syncShownHiddenBoard((i-1),(j+1));
           if(boardShown[i-1][j+1]==0) 
             boardShown[i-1][j+1] = 50;
       }
     }
   }
 
-  public void countNeighbouringBombs(int i, int j){
+  public void showRandomSurroundings(int i, int j){
     Random random = new Random();
     int x = random.nextInt()%4;
 
-    boardShown[i][j] = boardHidden[i][j];
+    syncShownHiddenBoard(i,j);
 
     if(x==0){
       if(i!=0){
         if(boardHidden[i-1][j]!=100){
-          boardShown[i-1][j] = boardHidden[i-1][j];
+          syncShownHiddenBoard((i-1),j);
           if(boardShown[i-1][j]==0)  
             boardShown[i-1][j] = 50;
         }
       }
       if(j!=0){
         if(boardHidden[i][j-1]!=100){
-          boardShown[i][j-1] = boardHidden[i][j-1];
+          syncShownHiddenBoard(i,(j-1));
           if(boardShown[i][j-1]==0)  
             boardShown[i][j-1] = 50;
         }
       }
       if(i!=0 && j!=0){
         if(boardHidden[i-1][j-1]!=100){
-          boardShown[i-1][j-1] = boardHidden[i-1][j-1];
+          syncShownHiddenBoard((i-1),(j-1));
           if(boardShown[i-1][j-1]==0)  
             boardShown[i-1][j-1] = 50;
         }
@@ -239,21 +240,21 @@ public class Minesweeper {
     else if(x==1){
       if(i!=0){
         if(boardHidden[i-1][j]!=100){
-          boardShown[i-1][j] = boardHidden[i-1][j];
+          syncShownHiddenBoard((i-1),j);
           if(boardShown[i-1][j]==0)  
             boardShown[i-1][j] = 50;
         }
       }
       if(j!=9){
         if(boardHidden[i][j+1]!=100){
-          boardShown[i][j+1] = boardHidden[i][j+1];
+          syncShownHiddenBoard(i,(j+1));
           if(boardShown[i][j+1]==0)  
             boardShown[i][j+1] = 50;
         }
       }
       if(i!=0 && j!=9){
         if(boardHidden[i-1][j+1]!=100){
-          boardShown[i-1][j+1] = boardHidden[i-1][j+1];
+          syncShownHiddenBoard((i-1),(j+1));
           if(boardShown[i-1][j+1]==0)  
             boardShown[i-1][j+1] = 50;
         }
@@ -262,21 +263,21 @@ public class Minesweeper {
     else if(x==2){
       if(i!=9){
         if(boardHidden[i+1][j]!=100){
-          boardShown[i+1][j] = boardHidden[i+1][j];
+          syncShownHiddenBoard((i+1),j);
           if(boardShown[i+1][j]==0)  
             boardShown[i+1][j] = 50;
         }
       }
       if(j!=9){
         if(boardHidden[i][j+1]!=100){
-          boardShown[i][j+1] = boardHidden[i][j+1];
+          syncShownHiddenBoard(i,(j+1));
           if(boardShown[i][j+1]==0)  
             boardShown[i][j+1] = 50;
         }
       }
       if(i!=9 && j!=9){
         if(boardHidden[i+1][j+1]!=100){
-          boardShown[i+1][j+1] = boardHidden[i+1][j+1];
+          syncShownHiddenBoard((i+1),(j+1));
           if(boardShown[i+1][j+1]==0)  
             boardShown[i+1][j+1] = 50;
         }
@@ -285,21 +286,21 @@ public class Minesweeper {
     else{
       if(i!=9){
         if(boardHidden[i+1][j]!=100){
-          boardShown[i+1][j] = boardHidden[i+1][j];
+          syncShownHiddenBoard((i+1),j);
           if(boardShown[i+1][j]==0)  
             boardShown[i+1][j] = 50;
         }
       }
       if(j!=0){
         if(boardHidden[i][j-1]!=100){
-          boardShown[i][j-1] = boardHidden[i][j-1];
+          syncShownHiddenBoard(i,(j-1));
           if(boardShown[i][j-1]==0)  
             boardShown[i][j-1] = 50;
         }
       }
       if(i!=9 && j!=0){
         if(boardHidden[i+1][j-1]!=100){
-          boardShown[i+1][j-1] = boardHidden[i+1][j-1];
+          syncShownHiddenBoard((i+1),(j-1));
           if(boardShown[i+1][j-1]==0)  
             boardShown[i+1][j-1] = 50;
         }
@@ -317,6 +318,10 @@ public class Minesweeper {
       }
     }
     return true;
+  }
+
+  public void syncShownHiddenBoard(int i, int j){
+    boardShown[i][j] = boardHidden[i][j];
   }
 
   
